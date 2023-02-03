@@ -40,6 +40,7 @@ export const login = async (
       : {},
     body: JSON.stringify(requestBody),
   }).then(async (res) => {
+    console.log(res);
     const a = await res.json();
     const {
       authResponce,
