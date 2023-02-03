@@ -54,7 +54,7 @@ export default function Home() {
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err, "login/page.tsx");
         toast({
           title: "ログインに失敗しました",
           status: "error",

@@ -17,6 +17,7 @@ export const login = async (
     !session.access_token &&
     (!loginInfo || !loginInfo.email || !loginInfo.password)
   ) {
+    console.log("Promise.reject");
     return Promise.reject();
   }
 
@@ -29,7 +30,7 @@ export const login = async (
         ? session.refresh_token
         : undefined,
   };
-
+  console.log(requestBody);
   return fetch("api/auth/login", {
     method: "POST",
     headers: session.access_token
@@ -40,7 +41,6 @@ export const login = async (
     body: JSON.stringify(requestBody),
   }).then(async (res) => {
     const a = await res.json();
-    console.log(a);
     const {
       authResponce,
     }: {
