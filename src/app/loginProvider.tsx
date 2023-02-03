@@ -23,5 +23,8 @@ export default function LoginProvider({
       });
     }
   }, [router, user.user, setUser]);
-  return <ChakraProvider>{children}</ChakraProvider>;
+  if (user.user === null) {
+    return <></>;
+  }
+  return <>{children}</>;
 }
