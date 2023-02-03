@@ -30,7 +30,7 @@ export const login = async (
         : undefined,
   };
 
-  await fetch("api/auth/login", {
+  return fetch("api/auth/login", {
     method: "POST",
     headers: session.access_token
       ? {
@@ -38,23 +38,21 @@ export const login = async (
         }
       : {},
     body: JSON.stringify(requestBody),
-  })
-    .then(async (res) => {
-      const {
-        authResponce,
-      }: {
-        authResponce: { user: User | null; session: Session | null };
-      } = await res.json();
+  }).then(async (res) => {
+    const {
+      authResponce,
+    }: {
+      authResponce: { user: User | null; session: Session | null };
+    } = await res.json();
 
-      if (authResponce.session !== null) {
-        sessionStorage.setItem("session", JSON.stringify(authResponce.session));
-      }
-      setUser((oldUser) => {
-        return {
-          user: authResponce.user || oldUser.user,
-          session: authResponce.session || oldUser.session || session,
-        };
-      });
-    })
-    .catch((e) => console.log(e));
+    if (authResponce.session !== null) {
+      sessionStorage.setItem("session", JSON.stringify(authResponce.session));
+    }
+    setUser((oldUser) => {
+      return {
+        user: authResponce.user || oldUser.user,
+        session: authResponce.session || oldUser.session || session,
+      };
+    });
+  });
 };
