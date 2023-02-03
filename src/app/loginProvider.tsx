@@ -5,6 +5,7 @@ import { useRecoilState } from "recoil";
 import { userState } from "@/state/user";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { login } from "@/utils/login";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -13,13 +14,14 @@ export default function LoginProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, _] = useRecoilState(userState);
+  const [user, setUser] = useRecoilState(userState);
   const router = useRouter();
   useEffect(() => {
     if (user.user === null) {
-      console.log("login privider");
-      router.push("/login");
+      login(undefined, setUser).catch(() => {
+        router.push("/login");
+      });
     }
-  }, [router, user.user]);
+  }, [router, user.user, setUser]);
   return <ChakraProvider>{children}</ChakraProvider>;
 }

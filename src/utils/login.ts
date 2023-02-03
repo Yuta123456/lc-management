@@ -17,7 +17,7 @@ export const login = async (
     !session.access_token &&
     (!loginInfo || !loginInfo.email || !loginInfo.password)
   ) {
-    return;
+    return Promise.reject();
   }
 
   const requestBody = {
@@ -39,11 +39,13 @@ export const login = async (
       : {},
     body: JSON.stringify(requestBody),
   }).then(async (res) => {
+    const a = await res.json();
+    console.log(a);
     const {
       authResponce,
     }: {
       authResponce: { user: User | null; session: Session | null };
-    } = await res.json();
+    } = a;
 
     if (authResponce.session !== null) {
       sessionStorage.setItem("session", JSON.stringify(authResponce.session));

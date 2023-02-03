@@ -23,7 +23,8 @@ export default async function handler(
   // access tokenがある場合はそれでuserを返す
   if (access_token) {
     const { data, error } = await supabase.auth.getUser(access_token);
-    if (!error) {
+    if (!error && (await isAdminUser(data.user))) {
+      console.log("access_token");
       return res.status(200).json({
         authResponce: {
           user: data.user,
@@ -38,7 +39,8 @@ export default async function handler(
     const { data, error } = await supabase.auth.refreshSession({
       refresh_token,
     });
-    if (!error) {
+    if (!error && (await isAdminUser(data.session?.user))) {
+      console.log("refresh_token_token");
       return res.status(200).json({
         authResponce: {
           user: data.user,
@@ -54,13 +56,32 @@ export default async function handler(
     email,
     password,
   });
-  if (!error && data.user && data.session) {
+  if (!error && data.user && data.session && (await isAdminUser(data.user))) {
+    console.log("email login");
     return res.status(200).json({ authResponce: data });
   }
   return res.status(500).end();
 }
 
-const isAdminUser = async (user: User) => {
+const isAdminUser = async (user: User | undefined) => {
+  if (user === undefined) {
+    return false;
+  }
   const prisma = new PrismaClient();
-  const users = await prisma.users.findMany();
+  const includeAdmin = async () => {
+    const users = await prisma.users.findMany({
+      where: {
+        id: user.id,
+        is_admin: true,
+      },
+    });
+    if (users.length > 0) {
+      return true;
+    }
+    return false;
+  };
+  return includeAdmin().then(async (res) => {
+    await prisma.$disconnect();
+    return res;
+  });
 };
