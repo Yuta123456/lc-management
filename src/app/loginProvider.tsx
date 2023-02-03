@@ -3,7 +3,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { useRecoilState } from "recoil";
 import { userState } from "@/state/user";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { login } from "@/utils/login";
 
@@ -16,6 +16,7 @@ export default function LoginProvider({
 }) {
   const [user, setUser] = useRecoilState(userState);
   const router = useRouter();
+  const pathname = usePathname();
   useEffect(() => {
     if (user.user === null) {
       login(undefined, setUser).catch(() => {
@@ -23,7 +24,7 @@ export default function LoginProvider({
       });
     }
   }, [router, user.user, setUser]);
-  if (user.user === null) {
+  if (pathname !== "/login" && user.user === null) {
     return <></>;
   }
   return <>{children}</>;
